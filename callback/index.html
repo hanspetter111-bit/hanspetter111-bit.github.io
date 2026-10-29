@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>Tesla-innlogging</title>
+<style>body{font-family:system-ui,sans-serif;max-width:40rem;margin:2rem auto;padding:0 1rem}textarea{width:100%;font-family:monospace;font-size:1rem}button{font-size:1.1rem;padding:.6rem 1.2rem;margin-top:.5rem}</style></head>
+<body>
+<h1 id="h">Ingen kode mottatt</h1>
+<div id="ok" hidden>
+  <p>Kopier koden under og lim den inn hos Teslabotten. Koden kan bare brukes én gang og går ut etter kort tid.</p>
+  <textarea id="c" rows="4" readonly></textarea>
+  <button id="b" type="button">Kopier kode</button>
+  <p>state: <code id="s"></code></p>
+</div>
+<p id="err" hidden></p>
+<noscript><p>Slå på JavaScript, eller kopier verdien etter <code>code=</code> fra adresselinjen.</p></noscript>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var code = q.get("code") || "", state = q.get("state") || "", err = q.get("error") || "";
+  if (err) {
+    document.getElementById("h").textContent = "Innlogging feilet";
+    var e = document.getElementById("err");
+    e.textContent = err + ": " + (q.get("error_description") || "");
+    e.hidden = false;
+  } else if (code) {
+    document.getElementById("h").textContent = "Ferdig hos Tesla";
+    document.getElementById("c").value = code;
+    document.getElementById("s").textContent = state;
+    document.getElementById("ok").hidden = false;
+    document.getElementById("b").onclick = function () {
+      var btn = this, t = document.getElementById("c");
+      var done = function () { btn.textContent = "Kopiert"; };
+      if (navigator.clipboard) { navigator.clipboard.writeText(t.value).then(done, function () { t.select(); }); }
+      else { t.select(); document.execCommand("copy"); done(); }
+    };
+  }
+})();
+</script>
+</body></html>
